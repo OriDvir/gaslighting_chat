@@ -48,33 +48,36 @@ class Data:
         if current_msg:
             self.parsed_data.append(current_msg)
 
-        #for i, data in enumerate(self.parsed_data, 1):
+        # for i, data in enumerate(self.parsed_data, 1):
         #    print(str(i) + ". " + "Date:" + data.date + " Sender:" + data.sender + " Content:" + data.content + " Score:" + str( data.score))
 
 
 def search_gaslighting():
     pass
 
+
 def translate_chat(chat_path):
-	data = read_file(chat_path)
-	translator = Translator(service_urls=[TRANSLATE_URL])
-	translated_data = []
-	for line in data:
-		try:
-			translated_data.append(translator.translate(text=line, dest='en', src='he').text)
-		except TypeError as e:
-			pass
-	write_file(chat_path + ".translated", translated_data)
-	return translated_data
+    data = read_file(chat_path)
+    translator = Translator(service_urls=[TRANSLATE_URL])
+    translated_data = []
+    for line in data:
+        try:
+            translated_data.append(translator.translate(text=line, dest='en', src='he').text)
+        except TypeError as e:
+            pass
+    write_file(chat_path + ".translated", translated_data)
+    return translated_data
+
 
 def gaslighting_chat(chat_path, translate):
-	translate_data = translate_chat(chat_path) if translate else read_file(chat_path)
-	dt = Data(translate_data)
+    translate_data = translate_chat(chat_path) if translate else read_file(chat_path)
+    dt = Data(translate_data)
     dt.parse_chat()
 
+
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser()
-	parser.add_argument("-c", "--chat_path", required=True, type=str)
-	parser.add_argument("-t", "--translate", required=False, default=True, type=bool)
-	args = parser.parse_args()
-	gaslighting_chat(args.chat_path, args.translate)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--chat_path", required=True, type=str)
+    parser.add_argument("-t", "--translate", required=False, default=True, type=bool)
+    args = parser.parse_args()
+    gaslighting_chat(args.chat_path, args.translate)
