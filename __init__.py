@@ -1,1 +1,1 @@
-from gaslighting_chat import gaslighting_chat
+from gaslighting_chat import gaslight_chat

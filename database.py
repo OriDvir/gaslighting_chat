@@ -1,41 +1,45 @@
 from email.policy import default
 from importlib.resources import contents
 from consts import DATABASE
-from sqlalchemy import create_engine, Column, Integer, String, DateTime 
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class Message(Base):
     __tablename__ = 'messages'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    datetime = Column(DateTime) 
+    datetime = Column(DateTime)
     sender = Column(String)
     content = Column(String)
+
 
 class Sender(Base):
     __tablename__ = 'senders'
     sender = Column(String, primary_key=True)
-    you_counter = Column(Integer, default=0) 
-    force_counter = Column(Integer, default=0)  
-    lie_counter = Column(Integer, default=0) 
-    money_counter = Column(Integer, default=0)  
-    alimony_counter = Column(Integer, default=0)  
+    you_counter = Column(Integer, default=0)
+    force_counter = Column(Integer, default=0)
+    lie_counter = Column(Integer, default=0)
+    money_counter = Column(Integer, default=0)
+    alimony_counter = Column(Integer, default=0)
     final_score = Column(Integer, default=0)
 
+
 class MessagePerWord(Base):
-   __tablename__ = 'message_per_word'
-   id = Column(Integer, primary_key=True, autoincrement=True)
-   sender = Column(String) 
-   word = Column(String)
-   msg_id = Column(Integer)
+    __tablename__ = 'message_per_word'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    sender = Column(String)
+    word = Column(String)
+    msg_id = Column(Integer)
+
 
 class DataBase():
     def __init__(self):
         self._db_name = DATABASE
         # Create the SQLite engine
-        self.engine = create_engine(self._db_name) 
+        self.engine = create_engine(self._db_name)
 
         # Create tables
         Base.metadata.create_all(self.engine)
@@ -66,13 +70,13 @@ class DataBase():
     def init_sender(self, sender):
         sender_obj = Sender(sender=sender)
         self.session.add(sender_obj)
-        self.session.commit() 
+        self.session.commit()
 
     def _increment_counter(self, sender, counter_attr):
         sender_obj = self.session.query(Sender).filter_by(sender=sender).first()
         counter_value = getattr(sender_obj, counter_attr)
         setattr(sender_obj, counter_attr, counter_value + 1)
-        self.session.commit()        
+        self.session.commit()
 
     def _inc_counter(self, sender, counter_attr, word, msg_id):
         self._increment_counter(sender, counter_attr)
