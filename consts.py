@@ -1,0 +1,3 @@
+GASLIGHTING_PHRASES=[
+    "you"
+]
