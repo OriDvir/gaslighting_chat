@@ -52,10 +52,6 @@ class Data:
         #    print(str(i) + ". " + "Date:" + data.date + " Sender:" + data.sender + " Content:" + data.content + " Score:" + str( data.score))
 
 
-def search_gaslighting():
-    pass
-
-
 def translate_chat(chat_path):
     data = read_file(chat_path)
     translator = Translator(service_urls=[TRANSLATE_URL])

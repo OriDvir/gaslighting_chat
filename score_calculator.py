@@ -1,14 +1,7 @@
 from typing import List
 
 from consts import GASLIGHTING_PHRASES
-
-
-class Message:
-    def __init__(self):
-        self.date = ""
-        self.sender = ""
-        self.content = ""
-        self.score = 0
+from gaslighting_chat import Message
 
 
 def calculate_message_score(message: Message):
