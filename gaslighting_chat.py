@@ -1,16 +1,16 @@
 from utils import read_file, write_file
 from score_calculator import calculate_all_messages_score
 from consts import TRANSLATE_URL
-from massage import Message
+from database import Message, Sender, DataBase
 
 import argparse
 from googletrans import Translator
 import re
 
 class Data:
-    def __init__(self, data):
+    def __init__(self, db, data):
+        self._db = db
         self._unparsed_data = data
-        self.parsed_data = []
 
     def parse_chat(self):
         # for parsing the message we define the pattern of each part of the message
@@ -23,11 +23,11 @@ class Data:
             # if there is a match with date pattern we are at the beginning of the message
             if re.match(date_pattern, line) and re.findall(sender_pattern, line) and re.findall(message_pattern, line):
                 if current_msg:
-                    self.parsed_data.append(current_msg)
+                    self._db.Messeges.insert_msg(current_msg)
 
                 # When a line matches the date pattern, we create a Message
                 current_msg = Message()
-                current_msg.date = re.findall(date_pattern, line)[0]
+                current_msg.datetime = re.findall(date_pattern, line)[0]
                 current_msg.sender = re.findall(sender_pattern, line)[0]
                 current_msg.content = re.findall(message_pattern, line)[0]
 
@@ -39,7 +39,7 @@ class Data:
 
         # add msg to the parsed data
         if current_msg:
-            self.parsed_data.append(current_msg)
+            self._db.Messeges.insert_msg(current_msg)
 
         # for i, data in enumerate(self.parsed_data, 1):
         #    print(str(i) + ". " + "Date:" + data.date + " Sender:" + data.sender + " Content:" + data.content + " Score:" + str( data.score))
@@ -60,9 +60,10 @@ def translate_chat(chat_path):
 
 def gaslighting_chat(chat_path, translate):
     translate_data = translate_chat(chat_path) if translate else read_file(chat_path)
-    dt = Data(translate_data)
+    db = DataBase()
+    dt = Data(db, translate_data)
     dt.parse_chat()
-    calculate_all_messages_score(dt.parsed_data)
+    calculate_all_messages_score(db)
 
 
 if __name__ == "__main__":

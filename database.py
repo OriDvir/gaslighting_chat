@@ -1,7 +1,5 @@
 from email.policy import default
 from importlib.resources import contents
-import sqlite3
-import datetime
 from consts import DATABASE
 from sqlalchemy import create_engine, Column, Integer, String, DateTime 
 from sqlalchemy.orm import sessionmaker
@@ -37,9 +35,14 @@ class DataBase():
         self.session = Session()
         
     class Messeges:
-        def insert_msg(self, datetime, sender, content):
-            msg_obj = Message(datetime=datetime, sender=sender, content=content)
-            self.session.add(msg_obj)
+        def insert_msg(self, datetime=None, sender=None, content=None):
+            if datetime is not None and sender is not None and content is not None:
+                msg_obj = Message(datetime=datetime, sender=sender, content=content)
+                self.session.add(msg_obj)
+            elif isinstance(datetime, Message):  # Assume 'datetime' is a Message object
+                self.session.add(datetime)
+            else:
+                return
             self.session.commit()
 
         def get_all_msgs(self):

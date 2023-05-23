@@ -1,7 +1,7 @@
 from typing import List
 
 from consts import GASLIGHTING_PHRASES
-from massage import Message
+from database import Message, DataBase
 
 
 def calculate_message_score(message: Message):
@@ -10,6 +10,7 @@ def calculate_message_score(message: Message):
             message.score += 1
 
 
-def calculate_all_messages_score(messages: List[Message]):
+def calculate_all_messages_score(db: DataBase):
+    messages = db.Messeges.get_all_msgs()
     for message in messages:
         calculate_message_score(message)
