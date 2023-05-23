@@ -42,6 +42,8 @@ class DataBase():
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
 
+    #### Messages ####
+
     def insert_msg(self, datetime=None, sender=None, content=None):
         if datetime is not None and sender is not None and content is not None:
             msg_obj = Message(datetime=datetime, sender=sender, content=content)
@@ -59,6 +61,8 @@ class DataBase():
         messeges = self.session.query(Message).filter(Message.datetime.between(start_datetime, end_datetime)).all()
         return messeges
 
+    #### Senders ####
+
     def init_sender(self, sender):
         sender_obj = Sender(sender=sender)
         self.session.add(sender_obj)
@@ -73,6 +77,8 @@ class DataBase():
     def _inc_counter(self, sender, counter_attr, word, msg_id):
         self._increment_counter(sender, counter_attr)
         mpw_obj = MessagePerWord(sender=sender, word=word, msg_id=msg_id)
+        self.session.add(mpw_obj)
+        self.session.commit() 
 
     def inc_you_counter(self, sender, msg_id):
         self._inc_counter(sender, 'you_counter', 'you', msg_id)
@@ -89,11 +95,18 @@ class DataBase():
     def inc_alimony_counter(self, sender, msg_id):
         self._inc_counter(sender, 'alimony_counter', 'alimony', msg_id)
 
-    def get_sender(self, sender):
-        sender_obj = self.session.query(Sender).filter_by(sender=sender).first()
-        return sender_obj
+    def get_senders(self):
+        return self.session.query(Sender).all()
 
     def update_score(self, sender, score):
         sender = self.session.query(Sender).filter_by(sender=sender).first()
         sender.score = score
         self.session.commit()
+
+    #### Message Per Word ####
+    def get_msgs_per_word(self, sender, word):
+        query = self.session.query(MessagePerWord).filter_by(sender=sender, word=word)
+        ids = [result.id for result in query]
+        msg_query = self.session.query(Message).filter(Message.id.in_(ids))
+        messages = msg_query.all()
+        return messages
