@@ -1,16 +1,19 @@
 from utils import read_file, write_file
 from score_calculator import calculate_all_messages_score
 from consts import TRANSLATE_URL
-from database import Message, Sender, DataBase
+from database import Message, DataBase
 
 import argparse
 from googletrans import Translator
 import re
+from datetime import datetime
+
 
 class Data:
     def __init__(self, db, data):
         self._db = db
         self._unparsed_data = data
+        self._senders = set()
 
     def parse_chat(self):
         # for parsing the message we define the pattern of each part of the message
@@ -27,8 +30,12 @@ class Data:
 
                 # When a line matches the date pattern, we create a Message
                 current_msg = Message()
-                current_msg.datetime = re.findall(date_pattern, line)[0]
+                try:
+                    current_msg.datetime = datetime.strptime(re.findall(date_pattern, line)[0], '%m/%d/%y, %H:%M')
+                except ValueError:
+                    current_msg.datetime = datetime.strptime(re.findall(date_pattern, line)[0], '%m/%d/%y, %I:%M %p')
                 current_msg.sender = re.findall(sender_pattern, line)[0]
+                self._senders.add(current_msg.sender)
                 current_msg.content = re.findall(message_pattern, line)[0]
 
             # if subsequent lines do not match the date pattern, we append them to the current message's
@@ -37,12 +44,16 @@ class Data:
                 if current_msg:
                     current_msg.content += line.strip()
 
-        # add msg to the parsed data
+        # add msg to the Data Base
         if current_msg:
             self._db.insert_msg(current_msg)
 
-        # for i, data in enumerate(self.parsed_data, 1):
-        #    print(str(i) + ". " + "Date:" + data.date + " Sender:" + data.sender + " Content:" + data.content + " Score:" + str( data.score))
+        # for i, data in enumerate(self.parsed_data, 1): print(str(i) + ". " + "Date:" + data.date + " Sender:" +
+        # data.sender + " Content:" + data.content + " Score:" + str( data.score))
+
+    def init_senders(self):
+        for sender in self._senders:
+            self._db.init_sender(sender)
 
 
 def translate_chat(chat_path):
@@ -58,11 +69,12 @@ def translate_chat(chat_path):
     return translated_data
 
 
-def gaslighting_chat(chat_path, translate):
+def gaslight_chat(chat_path, translate):
     translate_data = translate_chat(chat_path) if translate else read_file(chat_path)
     db = DataBase()
     dt = Data(db, translate_data)
     dt.parse_chat()
+    dt.init_senders()
     calculate_all_messages_score(db)
 
 
@@ -71,4 +83,4 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--chat_path", required=True, type=str)
     parser.add_argument("-t", "--translate", required=False, default=True, type=bool)
     args = parser.parse_args()
-    gaslighting_chat(args.chat_path, args.translate)
+    gaslight_chat(args.chat_path, args.translate)
