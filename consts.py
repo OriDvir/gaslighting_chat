@@ -3,3 +3,5 @@ GASLIGHTING_PHRASES=[
 ]
 
 TRANSLATE_URL = 'translate.googleapis.com'
+
+DATABASE = 'sqlite:///messeges.db'
