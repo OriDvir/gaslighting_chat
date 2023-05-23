@@ -20,12 +20,11 @@ class Data:
 
     def parse_chat(self):
         # for parsing the message we define the pattern of each part of the message
-        date_pattern = r"\d{1,2}[/\.]\d{1,2}[/\.]\d{4}, \d{1,2}:\d{2}(?: [APM]{2})?"
+        date_pattern = r"\d{1,2}[/\.]\d{1,2}[/\.]\d{2, 4}, \d{1,2}:\d{2}(?: [APM]{2})?"
         sender_pattern = r" - ([^:]+):"
         message_pattern = r": (.*)"
 
         current_msg = None
-
         for line in self._unparsed_data:
             # if there is a match with date pattern we are at the beginning of the message
             if re.match(date_pattern, line):
@@ -41,7 +40,8 @@ class Data:
             # if subsequent lines do not match the date pattern, we append them to the current message's
             # content until a new date is encountered.
             else:
-                current_msg.content += line.strip()
+                if current_msg:
+                    current_msg.content += line.strip()
 
         # add msg to the parsed data
         if current_msg:
