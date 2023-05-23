@@ -23,7 +23,7 @@ class Data:
             # if there is a match with date pattern we are at the beginning of the message
             if re.match(date_pattern, line) and re.findall(sender_pattern, line) and re.findall(message_pattern, line):
                 if current_msg:
-                    self._db.Messeges.insert_msg(current_msg)
+                    self._db.insert_msg(current_msg)
 
                 # When a line matches the date pattern, we create a Message
                 current_msg = Message()
@@ -39,7 +39,7 @@ class Data:
 
         # add msg to the parsed data
         if current_msg:
-            self._db.Messeges.insert_msg(current_msg)
+            self._db.insert_msg(current_msg)
 
         # for i, data in enumerate(self.parsed_data, 1):
         #    print(str(i) + ". " + "Date:" + data.date + " Sender:" + data.sender + " Content:" + data.content + " Score:" + str( data.score))

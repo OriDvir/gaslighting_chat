@@ -11,6 +11,6 @@ def calculate_message_score(message: Message):
 
 
 def calculate_all_messages_score(db: DataBase):
-    messages = db.Messeges.get_all_msgs()
+    messages = db.get_all_msgs()
     for message in messages:
         calculate_message_score(message)
