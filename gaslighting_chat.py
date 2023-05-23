@@ -1,18 +1,11 @@
 from utils import read_file, write_file
+from score_calculator import calculate_all_messages_score
+from consts import TRANSLATE_URL
+from massage import Message
+
 import argparse
 from googletrans import Translator
 import re
-
-TRANSLATE_URL = 'translate.googleapis.com'
-
-
-class Message:
-    def __init__(self):
-        self.date = ""
-        self.sender = ""
-        self.content = ""
-        self.score = 0
-
 
 class Data:
     def __init__(self, data):
@@ -69,6 +62,7 @@ def gaslighting_chat(chat_path, translate):
     translate_data = translate_chat(chat_path) if translate else read_file(chat_path)
     dt = Data(translate_data)
     dt.parse_chat()
+    calculate_all_messages_score(dt.parsed_data)
 
 
 if __name__ == "__main__":

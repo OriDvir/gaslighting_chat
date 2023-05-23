@@ -1,7 +1,7 @@
 from typing import List
 
 from consts import GASLIGHTING_PHRASES
-from gaslighting_chat import Message
+from massage import Message
 
 
 def calculate_message_score(message: Message):
