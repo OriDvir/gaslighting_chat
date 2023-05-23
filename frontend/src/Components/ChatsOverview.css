@@ -9,3 +9,7 @@
     text-align: left;
     margin-left: 12px;
 }
+
+.react-daterange-picker__inputGroup {
+    display: inline-block;
+}

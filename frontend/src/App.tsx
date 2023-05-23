@@ -7,8 +7,9 @@ import '@fontsource/roboto/700.css';
 import './App.css';
 import { ChatsContext, chatsMock } from './Contexts/ChatsContext';
 import { ChatDrill } from './Components/ChatDrill';
-import { RouterProvider, createBrowserRouter, useLocation } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { ChatContent } from './Components/ChatContent';
+
 
 function App() {
   const router = createBrowserRouter([

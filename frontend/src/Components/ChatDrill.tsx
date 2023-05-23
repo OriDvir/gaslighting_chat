@@ -33,14 +33,14 @@ export const ChatDrill: React.FC<ChatDrillProps> = () => {
     const commonOccurences = groupBy(chat.occurrences, "phrase");
     const commonOccurencesParsed = map(commonOccurences, (occurances, phrase) => ({phrase,  occurances}));
     return <>
-        <header>
+        <header className="page-title-drill">
             {`${chat.chatName}-${chat.owner}`}
         </header>
         <div>
             {minData} - {maxDate}
         </div>
         <div className="chat-drill-grid">
-            <ResponsiveContainer width="50%" height={240} className="chat-drill-line-chart">
+            <ResponsiveContainer width="100%" height={240} className="chat-drill-line-chart">
                 <LineChart data={parsedLineData} width={560} height={190}>
                     <XAxis dataKey="datetime" type = 'number' tickFormatter = {(unixTime) => moment(unixTime).format("DD/MM/YYYY hh:mm")}
                         domain = {['auto', 'auto']}
@@ -52,7 +52,7 @@ export const ChatDrill: React.FC<ChatDrillProps> = () => {
                     <Line type="monotone" dataKey={sideB} stroke="#e3b505" connectNulls strokeWidth={3}/>
                 </LineChart>
             </ResponsiveContainer>
-            <ResponsiveContainer width="50%" height={240} className="bar-drill-line-chart">
+            <ResponsiveContainer width="100%" height={240} className="bar-drill-line-chart">
                 <BarChart data={parsedBarData} width={560} height={190}>
                     <YAxis />
                     <XAxis dataKey="sender" />
@@ -65,7 +65,7 @@ export const ChatDrill: React.FC<ChatDrillProps> = () => {
             <div className="commonOccurences">
                 <List>
                     {commonOccurencesParsed.map((occuranceGroup) => {
-                        return <ListItemButton></ListItemButton>
+                        return <ListItemButton>{occuranceGroup.phrase}</ListItemButton>
                     })}
                 </List>
             </div>
