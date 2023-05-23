@@ -1,7 +1,7 @@
 from utils import read_file, write_file
 from score_calculator import calculate_all_messages_score
 from consts import TRANSLATE_URL
-from database import Message, Sender, DataBase
+from database import Message, DataBase
 
 import argparse
 from googletrans import Translator
@@ -30,7 +30,10 @@ class Data:
 
                 # When a line matches the date pattern, we create a Message
                 current_msg = Message()
-                current_msg.datetime = datetime.strptime(re.findall(date_pattern, line)[0], "%m/%d/%y, %H:%M")
+                try:
+                    current_msg.datetime = datetime.strptime(re.findall(date_pattern, line)[0], '%m/%d/%y, %H:%M')
+                except ValueError:
+                    current_msg.datetime = datetime.strptime(re.findall(date_pattern, line)[0], '%m/%d/%y, %I:%M %p')
                 current_msg.sender = re.findall(sender_pattern, line)[0]
                 self._senders.add(current_msg.sender)
                 current_msg.content = re.findall(message_pattern, line)[0]
@@ -50,7 +53,7 @@ class Data:
 
     def init_senders(self):
         for sender in self._senders:
-            self._db.Senders.init_sender(sender)
+            self._db.init_sender(sender)
 
 
 def translate_chat(chat_path):
