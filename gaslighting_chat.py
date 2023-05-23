@@ -20,14 +20,14 @@ class Data:
 
     def parse_chat(self):
         # for parsing the message we define the pattern of each part of the message
-        date_pattern = r"\d{1,2}[/\.]\d{1,2}[/\.]\d{2, 4}, \d{1,2}:\d{2}(?: [APM]{2})?"
+        date_pattern = r"\d{1,2}[/\.]\d{1,2}[/\.]\d{2,4}, \d{1,2}:\d{2}(?: [APM]{2})?"
         sender_pattern = r" - ([^:]+):"
         message_pattern = r": (.*)"
 
         current_msg = None
         for line in self._unparsed_data:
             # if there is a match with date pattern we are at the beginning of the message
-            if re.match(date_pattern, line):
+            if re.match(date_pattern, line) and re.findall(sender_pattern, line) and re.findall(message_pattern, line):
                 if current_msg:
                     self.parsed_data.append(current_msg)
 
@@ -47,8 +47,8 @@ class Data:
         if current_msg:
             self.parsed_data.append(current_msg)
 
-        for i, data in enumerate(self.parsed_data, 1): print( str(i) + ". " + "Date:" + data.date + " Sender:" +
-        data.sender + " Content:" + data.content + " Score:" + str( data.score))
+        #for i, data in enumerate(self.parsed_data, 1): 
+        #    print(str(i) + ". " + "Date:" + data.date + " Sender:" + data.sender + " Content:" + data.content + " Score:" + str( data.score))
 
 
 def search_gaslighting():
@@ -61,7 +61,10 @@ def translate_chat(chat_path):
     translator = Translator(service_urls=[TRANSLATE_URL])
     translated_data = []
     for line in data:
-        translated_data.append(translator.translate(text=line, dest='en', src='he').text)
+        try:
+            translated_data.append(translator.translate(text=line, dest='en', src='he').text)
+        except TypeError as e:
+            pass
     return translated_data
 
 def gaslighting_chat(chat_path):
