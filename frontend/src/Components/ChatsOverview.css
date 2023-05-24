@@ -1,0 +1,15 @@
+.page-title {
+    text-align: left;
+    margin-left: 8px;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.date-container {
+    text-align: left;
+    margin-left: 12px;
+}
+
+.react-daterange-picker__inputGroup {
+    display: inline-block;
+}

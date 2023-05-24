@@ -1,0 +1,18 @@
+.chat-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.owner-message {
+    width: fit-content;
+    margin: 4px;
+    align-self: start;
+    direction: rtl;
+}
+
+.side-b-message {
+    width: fit-content;
+    margin: 4px;
+    align-self: end;
+    direction: rtl;
+}
