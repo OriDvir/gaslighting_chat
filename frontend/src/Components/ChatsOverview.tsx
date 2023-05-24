@@ -22,17 +22,18 @@ export const ChatsOverview : React.FC = () => {
     const chats = useContext(ChatsContext);
     const [dateRange, onDateRangeChange] = useState<[Date, Date]>([new Date(), new Date()]);
 
-    function onChange(value: any) {
+    function onChange(value: any) { 
         onDateRangeChange(value);
+        return true;
     }
 
     return <div>
         <header className="page-title">
             Chats Score
         </header>
+        {/*<DateRangePicker onChange={onChange} value={dateRange}/>*/}
         <div className="date-container">
-            <DateRangePicker onChange={onChange} value={dateRange} clearIcon={null} maxDate={new Date()} closeCalendar={true}
-            shouldCloseCalendar={() => true}/>
+            {`${dateRange[0].toLocaleDateString()}-${dateRange[1].toLocaleDateString()}`}
         </div>
         <TableContainer>
             <Table>
@@ -50,7 +51,7 @@ export const ChatsOverview : React.FC = () => {
                                 {`${chat.chatName}-${chat.owner}`}
                             </TableCell>
                             <TableCell>
-                                {chat.score}
+                                <span style={{color: chat.score > 10 ? "red" : "black"}}>{chat.score}</span>
                             </TableCell>
                             <TableCell size="small" align="left">
                                 <Button variant="contained" onClick={() => navigate(`/chat/${index}`)}>

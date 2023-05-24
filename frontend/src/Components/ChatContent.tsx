@@ -21,9 +21,9 @@ export const ChatContent: React.FC<ChatContentProps> = () => {
     const chat = chats[chatIndex];
 
     return <div className="chat-grid">
-        {chat.messages.map(message => 
+        {/*chat.messages.map(message => 
             <StyledChip label={message.content} className={message.sender === chat.owner ? "owner-message" : "side-b-message"}
             color={message.sender === chat.owner ? "primary" : "default"}/>
-        )}
+        )*/}
     </div>
 }
