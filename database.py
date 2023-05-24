@@ -4,6 +4,7 @@ from consts import DATABASE, MSG_DB
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import os 
 
 Base = declarative_base()
 
@@ -36,12 +37,12 @@ class MessagePerWord(Base):
 
 
 class DataBase():
-    def __init__(self, db=MSG_DB, new_db=True):
+    def __init__(self, db=MSG_DB):
         self._db_name = db
         # Create the SQLite engine
         self.engine = create_engine(self._db_name)
-
-        if new_db:
+        
+        if not os.path.exists(self._db_name.split("sqlite:///")[-1]):
             # Create tables
             Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
@@ -49,7 +50,7 @@ class DataBase():
     
     @classmethod
     def get_db(cls, db_name):
-        return DataBase(DATABASE.format(db_name=db_name), True)
+        return DataBase(DATABASE.format(db_name=db_name))
 
     def close(self):
         self.session.close()
@@ -75,9 +76,10 @@ class DataBase():
     #### Senders ####
 
     def init_sender(self, sender):
-        sender_obj = Sender(sender=sender)
-        self.session.add(sender_obj)
-        self.session.commit()
+        if sender not in [x.sender for x in self.get_senders()]:
+            sender_obj = Sender(sender=sender)
+            self.session.add(sender_obj)
+            self.session.commit()
 
     def _increment_counter(self, sender, counter_attr):
         sender_obj = self.session.query(Sender).filter_by(sender=sender).first()
