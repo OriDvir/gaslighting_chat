@@ -77,7 +77,6 @@ def gaslight_chat(chat_path, translate):
     dt.init_senders()
     calculate_all_messages_score(db)
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--chat_path", required=True, type=str)

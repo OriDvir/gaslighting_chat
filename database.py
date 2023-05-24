@@ -1,6 +1,6 @@
 from email.policy import default
 from importlib.resources import contents
-from consts import DATABASE
+from consts import DATABASE, MSG_DB
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -36,16 +36,23 @@ class MessagePerWord(Base):
 
 
 class DataBase():
-    def __init__(self):
-        self._db_name = DATABASE
+    def __init__(self, db=MSG_DB, new_db=True):
+        self._db_name = db
         # Create the SQLite engine
         self.engine = create_engine(self._db_name)
 
-        # Create tables
-        Base.metadata.create_all(self.engine)
+        if new_db:
+            # Create tables
+            Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
+    
+    @classmethod
+    def get_db(cls, db_name):
+        return DataBase(DATABASE.format(db_name=db_name), True)
 
+    def close(self):
+        self.session.close()
     #### Messages ####
 
     def insert_msg(self, datetime=None, sender=None, content=None):
@@ -84,20 +91,13 @@ class DataBase():
         self.session.add(mpw_obj)
         self.session.commit() 
 
-    def inc_you_counter(self, sender, msg_id):
-        self._inc_counter(sender, 'you_counter', 'you', msg_id)
+    def inc_counter(self, sender, msg_id, pharse):
+        self._inc_counter(sender, f'{pharse}_counter', pharse, msg_id)
 
-    def inc_force_counter(self, sender, msg_id):
-        self._inc_counter(sender, 'force_counter', 'force', msg_id)
-
-    def inc_lie_counter(self, sender, msg_id):
-        self._inc_counter(sender, 'lie_counter', 'lie', msg_id)
-
-    def inc_money_counter(self, sender, msg_id):
-        self._inc_counter(sender, 'money_counter', 'money', msg_id)
-
-    def inc_alimony_counter(self, sender, msg_id):
-        self._inc_counter(sender, 'alimony_counter', 'alimony', msg_id)
+    def get_counter(self, sender, pharse):
+        sender_obj = self.session.query(Sender).filter_by(sender=sender).first()
+        counter_attr = f'{pharse}_counter'
+        return getattr(sender_obj, counter_attr)
 
     def get_senders(self):
         return self.session.query(Sender).all()
@@ -114,3 +114,8 @@ class DataBase():
         msg_query = self.session.query(Message).filter(Message.id.in_(ids))
         messages = msg_query.all()
         return messages
+
+    #### Chat ####
+    def get_chat_score(self):
+        senders = self.get_senders()
+        return {sender.sender:sender.final_score for sender in senders}
